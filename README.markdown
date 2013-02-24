@@ -20,7 +20,7 @@ having to reinstall gems every time you install a new patch release, check out
 
     mkdir -p ~/.rbenv/plugins
     git clone git://github.com/tpope/rbenv-alias.git \
-      ~/.rbenv/plugins/rbenv-sentience
+      ~/.rbenv/plugins/rbenv-alias
     rbenv alias --auto
 
 [rbenv]: https://github.com/sstephenson/rbenv
