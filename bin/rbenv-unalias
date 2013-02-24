@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Summary: Remove one or more symlinks in the versions directory
+#
+# Usage: rbenv unalias <alias> [<alias> ...]
+
+# Provide rbenv completions
+if [ --complete = "$1" ]; then
+  rbenv-alias --list | awk '{print $1}'
+  exit 0
+fi
+
+[ $# -gt 0 ] || exec rbenv-help alias
+
+for arg in "$@"; do
+  rbenv-alias "$arg" --remove
+done

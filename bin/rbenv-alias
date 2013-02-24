@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+#
+# Summary: Symlink a short name to an exact version
+#
+# Usage: rbenv alias <name> [<version> | --auto | --remove]
+#        rbenv alias --auto
+#        rbenv alias [--list]
+#
+# Symlink a short name to an exact version.  Passing a second argument of
+# --auto selects the latest patch release of the given point version.  Passing
+# a first argument of auto does the same for all installed point releases.
+
+shopt -s nullglob
+
+cd "$RBENV_ROOT/versions"
+
+resolve_link() {
+  $(type -p greadlink readlink | head -1) "$1"
+}
+
+list() {
+  local exit=1
+  for dir in $(echo_lines *); do
+    if [ -L "$dir" ]; then
+      echo "$dir => $(resolve_link "$dir")"
+      exit=0
+    fi
+  done
+  return $exit
+}
+
+cleanup_invalid() {
+  for version in *; do
+    if [ -L $version -a ! -e "$(resolve_link $version)" ]; then
+      echo "Removing invalid link from $version to $(resolve_link $version)"
+      rm $version
+    fi
+  done
+}
+
+echo_lines() {
+  for line in "$@"; do
+    echo "$line"
+  done
+}
+
+auto_for_point() {
+  local highest="$(echo_lines $1-p[0-9]*|sed -e 's/.*-p//'|sort -n|tail -1)"
+  if [ -d "$1-p$highest" ]; then
+    echo "$1-p$highest"
+  else
+    ls -1d $1-*|sort|tail -1
+  fi
+}
+
+auto_symlink_point() {
+  local auto="$(auto_for_point $1)"
+  if [ -z "$auto" ]; then
+    echo "Couldn't find any versions for $1" >&2
+  else
+    ln -sf "$auto" "$1"
+    echo "$1 => $auto"
+  fi
+}
+
+point_releases() {
+  echo_lines *.*.*-*|sed -e 's/-.*//'|sort -u
+}
+
+# Provide rbenv completions
+if [ --complete = "$1" ]; then
+  shift
+  if [ "$#" = 1 ]; then
+    echo --auto
+    echo --remove
+    rbenv-versions --bare
+  elif [ "$#" = 0 ]; then
+    echo --auto
+    echo --list
+    { point_releases; rbenv-versions --bare; } | sort -u
+  fi
+  exit 0
+fi
+
+case "$#" in
+
+  2)
+    case "$1" in --*)
+      case "$2" in -*) exec rbenv-help alias ;; esac
+      exec rbenv-alias "$2" "$1" ;;
+    esac
+    if [ -e "$1" -a ! -L "$1" ]; then
+      echo "Not clobbering $1" >&2
+      exit 1
+    elif [ --remove = "$2" ]; then
+      if [ -L "$1" ]; then
+        rm "$1"
+      else
+        echo "No such alias $1" >&2
+        exit 1
+      fi
+    elif [ --auto = "$2" ]; then
+      case "$1" in
+        *.*.*)
+          auto_symlink_point "$1"
+          ;;
+        *)
+          echo "Don't know how to automatically alias $1" >&2
+          exit 1
+          ;;
+      esac
+    else
+      echo "$1 => $2"
+      ln -sf "$2" "$1"
+    fi
+    ;;
+
+  1)
+    case "$1" in
+      --list)
+        list
+        ;;
+      --auto|--all)
+        cleanup_invalid
+        for point in $(point_releases); do
+          auto_symlink_point $point
+        done
+        ;;
+      -*)
+        rbenv-help alias
+        ;;
+      *)
+        if [ -L "$1" ]; then
+          readlink "$1"
+        elif [ -d "$1" ]; then
+          echo "$1 is an install, not an alias" >&2
+          exit 1
+        elif [ -e "$1" ]; then
+          echo "$1 exists but is not an alias" >&2
+          exit 1
+        else
+          echo "$1 does not exist" >&2
+          exit 1
+        fi
+    esac
+    ;;
+
+  0)
+    list
+    ;;
+
+  *)
+    rbenv-help alias
+    ;;
+esac
