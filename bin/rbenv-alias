@@ -58,7 +58,7 @@ auto_symlink_point() {
   if [ -z "$auto" ]; then
     echo "Couldn't find any versions for $1" >&2
   else
-    ln -sf "$auto" "$1"
+    ln -nsf "$auto" "$1"
     echo "$1 => $auto"
   fi
 }
@@ -111,7 +111,7 @@ case "$#" in
       esac
     else
       echo "$1 => $2"
-      ln -sf "$2" "$1"
+      ln -nsf "$2" "$1"
     fi
     ;;
 
