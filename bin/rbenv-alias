@@ -47,27 +47,56 @@ echo_lines() {
   done
 }
 
+auto_for_minor() {
+  local highest="$(echo_lines $1.[0-9]*|sed -e "s/^${1}\.\([0-9]*\).*/\1/"|sort -n|tail -1)"
+  local version_without_patch="$1.$highest"
+  auto_for_point "$1.$highest"
+}
+
 auto_for_point() {
   local highest="$(echo_lines $1-p[0-9]*|sed -e 's/.*-p//'|sort -n|tail -1)"
   if [ -d "$1-p$highest" ]; then
     echo "$1-p$highest"
+  elif [ -d "$1" ]; then
+    echo "$1"
   else
-    ls -1d $1-*|sort|tail -1
+    ls -d $1-* 2> /dev/null |sort|tail -1
+  fi
+}
+
+auto_symlink_minor() {
+  local auto="$(auto_for_minor $1)"
+  if [ "$1" != "$auto" ]; then
+    auto_symlink "$1" "$auto"
   fi
 }
 
 auto_symlink_point() {
   local auto="$(auto_for_point $1)"
-  if [ -z "$auto" ]; then
+  if [ "$1" != "$auto" ]; then
+    auto_symlink "$1" "$auto"
+  fi
+}
+
+auto_symlink() {
+  if [ -z "$2" ]; then
     echo "Couldn't find any versions for $1" >&2
   else
-    ln -nsf "$auto" "$1"
-    echo "$1 => $auto"
+    ln -nsf "$2" "$1"
+    echo "$1 => $2"
   fi
 }
 
 point_releases() {
-  echo_lines *.*.*-*|sed -e 's/-.*//'|sort -u
+  (
+        ls -d *.*.*-* 2> /dev/null |sed -e 's/-.*//'
+  )|sort -u
+}
+
+minor_releases() {
+  (
+        ls -d *.*.* 2> /dev/null | sed -e '/^1\./d' -e '/^2\.0\./d' -e 's/-.*//' -e 's/\.[0-9]*$//'
+  )|sort -u
 }
 
 # Provide rbenv completions
@@ -80,7 +109,7 @@ if [ --complete = "$1" ]; then
   elif [ "$#" = 0 ]; then
     echo --auto
     echo --list
-    { point_releases; rbenv-versions --bare; } | sort -u
+    { point_releases; minor_releases; rbenv-versions --bare; } | sort -u
   fi
   exit 0
 fi
@@ -104,8 +133,11 @@ case "$#" in
       fi
     elif [ --auto = "$2" ]; then
       case "$1" in
-        *.*.*)
+        [0-9]*.[0-9]*.*)
           auto_symlink_point "$1"
+          ;;
+        [0-9]*.[0-9]*)
+          auto_symlink_minor "$1"
           ;;
         *)
           echo "Don't know how to automatically alias $1" >&2
@@ -126,7 +158,12 @@ case "$#" in
       --auto|--all)
         cleanup_invalid
         for point in $(point_releases); do
+          echo POINT $point
           auto_symlink_point $point
+        done
+        for minor in $(minor_releases); do
+          echo MINOR $minor
+          auto_symlink_minor $minor
         done
         ;;
       -*)
