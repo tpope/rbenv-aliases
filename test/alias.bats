@@ -38,13 +38,21 @@ load test_helper
 
 }
 
-@test "rbenv-alias 2.1 --auto" {
+@test "rbenv-alias 2.1 --auto for 2.1.0" {
   create_versions 2.1.0
 
   run rbenv-alias 2.1 --auto
-  assert_output "HUH"
   assert_success
   assert_alias_version 2.1 2.1.0
+}
+
+@test "rbenv-alias 2.1 --auto for 2.1.0 and 2.1.0-p2" {
+  create_versions 2.1.0
+  create_versions 2.1.0-p2
+
+  run rbenv-alias 2.1 --auto
+  assert_success
+  assert_alias_version 2.1 2.1.0-p2
 }
 
 @test "rbenv-alias 2.2 --auto" {
@@ -57,11 +65,13 @@ load test_helper
 
 @test "rbenv-alias --auto for 2.1.N versions" {
   create_versions 2.1.0
-  create_versions 2.1.1
+  create_versions 2.1.2
+  create_versions 2.1.10
   create_versions 2.2.1-p123
 
   run rbenv-alias --auto
   assert_success
-  assert_alias_version 2.1 2.1.1
+  assert_alias_version 2.1 2.1.10
   assert_alias_version 2.2 2.2.1-p123
+  assert_alias_version 2.2.1 2.2.1-p123
 }

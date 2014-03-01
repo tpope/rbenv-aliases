@@ -38,7 +38,6 @@ load test_helper
   run rbenv-install $v
   assert_success
   assert_line "Installed fake version $v"
-  assert_output "HUH"
   assert_alias_version 2.1 $v
 }
 
@@ -50,11 +49,12 @@ load test_helper
   assert_alias_version 2.10 $v
 }
 
-@test "running rbenv-install auto installs an alias for 2.99 from 2.99.99-p999" {
+@test "running rbenv-install auto installs an alias for 2.99 and 2.99.99 from 2.99.99-p999" {
   v=2.99.99-p999
   run rbenv-install $v
   assert_success
   assert_line "Installed fake version $v"
   assert_alias_version 2.99 $v
+  assert_alias_version 2.99.99 $v
 }
 
