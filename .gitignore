@@ -1,0 +1,9 @@
+
+# test temp files
+bats
+rbenv
+
+# Editor temp/backup files
+*~
+*.swp
+
