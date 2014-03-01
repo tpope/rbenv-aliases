@@ -11,10 +11,29 @@ Plus, if you're using [ruby-build][], `rbenv install A.B.C-pXXX` automatically
 invokes `rbenv alias A.B.C --auto`, so you'll always have up to date aliases
 for point releases.
 
+From ruby 2.1 onwards `rbenv alias A.B --auto` is also called by install.
+
 Whether it's a good idea to use these aliases in a `.ruby-version` file, I
 cannot say.  I created this plugin to find out.  If your only concern is
 having to reinstall gems every time you install a new patch release, check out
 [rbenv-communal-gems][].
+
+[![Build Status](https://travis-ci.org/ianheggie/rbenv-aliases.png?branch=master)](https://travis-ci.org/ianheggie/rbenv-aliases)
+
+## Usage
+
+    rbenv alias <name> [<version> | --auto | --remove]
+    rbenv alias --auto
+    rbenv alias [--list]
+
+    Symlink a short name to an exact version.  Passing a second argument of
+    --auto selects the latest patch release of the given point version.  Passing
+    a first argument of auto does the same for all installed point releases.
+
+    rbenv unalias <alias> [<alias> ...]
+
+    Remove one or more symlinks in the versions directory
+
 
 ## Installation
 
