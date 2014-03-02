@@ -23,3 +23,4 @@ load test_helper
   assert_line '1.9.3 => 1.9.3-p200'
 
 }
+
