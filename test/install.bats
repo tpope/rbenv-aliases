@@ -33,8 +33,8 @@ load test_helper
   assert_alias_missing 2.0
 }
 
-@test "running rbenv-install auto installs an alias for 2.1 from 2.1.0" {
-  v=2.1.0
+@test "running rbenv-install auto installs an alias for 2.1 from 2.1.1" {
+  v=2.1.1
   run rbenv-install $v
   assert_success
   assert_line "Installed fake version $v"
