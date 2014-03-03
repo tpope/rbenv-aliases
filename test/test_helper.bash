@@ -40,8 +40,9 @@ create_versions() {
   do
     #echo "Created version: $d"
     d="$RBENV_TEST_DIR/root/versions/$v"
-    mkdir -p "$d"
+    mkdir -p "$d/bin"
     echo $v > "$d/RELEASE.txt"
+    ln -nfs /bin/echo "$d/bin/ruby"
   done
 }
 
