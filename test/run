@@ -1,23 +1,10 @@
 #!/bin/bash
 
-if [ -d bats ]
-then
-  ( 
-    cd bats
-    git pull
-  )
-else
-  git clone https://github.com/sstephenson/bats.git 
+if [ ! -f test/run ]; then
+  cd ..
+fi
+if [ ! -d bats -o ! -d rbenv ]; then
+  test/setup_rbenv_and_bats
 fi
 
-if [ -d rbenv ]
-then
-  ( 
-    cd rbenv
-    git pull
-  )
-else
-  git clone https://github.com/sstephenson/rbenv.git
-fi
-
-exec bats/bin/bats test
+exec bats/bin/bats test/$1
