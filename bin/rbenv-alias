@@ -20,6 +20,7 @@ resolve_link() {
 
 list() {
   local exit=1
+  local dir
   for dir in $(echo_lines *); do
     if [ -L "$dir" ]; then
       echo "$dir => $(resolve_link "$dir")"
@@ -30,6 +31,7 @@ list() {
 }
 
 cleanup_invalid() {
+  local version
   for version in *; do
     if [ -L $version -a ! -e "$(resolve_link $version)" ]; then
       echo "Removing invalid link from $version to $(resolve_link $version)"
@@ -39,6 +41,7 @@ cleanup_invalid() {
 }
 
 echo_lines() {
+  local line
   for line in "$@"; do
     echo "$line"
   done
