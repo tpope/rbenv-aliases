@@ -47,13 +47,16 @@ echo_lines() {
   done
 }
 
+echo_lines_without_symlinks() {
+  local file
+  for file in "$@"; do
+    [ ! -L "$file" ] && echo "$file"
+  done
+}
+
 auto_for_point() {
-  local highest="$(echo_lines $1-p[0-9]*|sed -e 's/.*-p//'|sort -n|tail -1)"
-  if [ -d "$1-p$highest" ]; then
-    echo "$1-p$highest"
-  else
-    ls -1d $1-*|sort|tail -1
-  fi
+  local highest="$(echo_lines_without_symlinks $1*|sort -n|tail -1)"
+  echo "$highest"
 }
 
 auto_symlink_point() {
@@ -67,7 +70,14 @@ auto_symlink_point() {
 }
 
 point_releases() {
-  echo_lines *.*.*-*|sed -e 's/-.*//'|sort -u
+  # 1.9.3-p123
+  echo_lines_without_symlinks *.*.*-*|sed -e 's/-.*//'|sort -u
+
+  # jruby-1.7.3
+  echo_lines_without_symlinks *-*.*.*|sed -e 's/\.[0-9]\+$//'|sort -u
+
+  # 2.1.4
+  echo_lines_without_symlinks [0-9].[0-9].[0-9]|sed -e 's/\.[0-9]\+$//'|sort -u
 }
 
 # Provide rbenv completions
