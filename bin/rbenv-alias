@@ -80,6 +80,14 @@ point_releases() {
   echo_lines_without_symlinks [0-9].[0-9].[0-9]|sed -e 's/\.[0-9]\+$//'|sort -u
 }
 
+fail() {
+  { if [ "$#" -eq 0 ]; then cat -
+    else echo "$@"
+    fi
+  } >&2
+  exit 1
+}
+
 # Provide rbenv completions
 if [ --complete = "$1" ]; then
   shift
@@ -99,32 +107,18 @@ case "$#" in
 
   2)
     case "$1" in --*)
-      case "$2" in -*)
-        rbenv-help --usage alias >&2;
-        exit 1
-        ;;
-      esac
+      case "$2" in -*) fail < <(rbenv-help --usage alias) ;; esac
       exec rbenv-alias "$2" "$1" ;;
     esac
-    if [ -e "$1" -a ! -L "$1" ]; then
-      echo "Not clobbering $1" >&2
-      exit 1
+    if [ -e "$1" -a ! -L "$1" ]; then fail "Not clobbering $1"
     elif [ --remove = "$2" ]; then
-      if [ -L "$1" ]; then
-        rm "$1"
-      else
-        echo "No such alias $1" >&2
-        exit 1
+      if [ -L "$1" ]; then rm "$1"
+      else fail "No such alias $1"
       fi
     elif [ --auto = "$2" ]; then
       case "$1" in
-        *.*.*)
-          auto_symlink_point "$1"
-          ;;
-        *)
-          echo "Don't know how to automatically alias $1" >&2
-          exit 1
-          ;;
+        *.*.*) auto_symlink_point "$1" ;;
+        *) fail "Don't know how to automatically alias $1" ;;
       esac
     else
       echo "$1 => $2"
@@ -147,31 +141,18 @@ case "$#" in
         exec rbenv-help alias
         ;;
       -*)
-        rbenv-help --usage alias >&2
-        exit 1
+        fail < <(rbenv-help --usage alias)
         ;;
       *)
-        if [ -L "$1" ]; then
-          readlink "$1"
-        elif [ -d "$1" ]; then
-          echo "$1 is an install, not an alias" >&2
-          exit 1
-        elif [ -e "$1" ]; then
-          echo "$1 exists but is not an alias" >&2
-          exit 1
-        else
-          echo "$1 does not exist" >&2
-          exit 1
+        if [ -L "$1" ]; then readlink "$1"
+        elif [ -d "$1" ]; then fail "$1 is an install, not an alias"
+        elif [ -e "$1" ]; then fail "$1 exists but is not an alias"
+        else fail "$1 does not exist"
         fi
     esac
     ;;
 
-  0)
-    list
-    ;;
+  0) list ;;
 
-  *)
-    rbenv-help --usage alias >&2
-    exit 1
-    ;;
+  *) fail < <(rbenv-help --usage alias) ;;
 esac
