@@ -4,14 +4,22 @@
 #
 # Usage: rbenv unalias <alias> [<alias> ...]
 
+case "$1" in
 # Provide rbenv completions
-if [ --complete = "$1" ]; then
-  rbenv-alias --list | awk '{print $1}'
-  exit 0
-fi
-
-[ $# -gt 0 ] || exec rbenv-help alias
-
-for arg in "$@"; do
-  rbenv-alias "$arg" --remove
-done
+  --complete)
+    rbenv-alias --list | awk '{print $1}'
+    exit 0
+    ;;
+  --help)
+    exec rbenv-help unalias
+    ;;
+  "")
+    rbenv-help --usage unalias >&2
+    exit 1
+    ;;
+  *)
+    for arg in "$@"; do
+      rbenv-alias "$arg" --remove
+    done
+    ;;
+esac

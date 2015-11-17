@@ -99,7 +99,11 @@ case "$#" in
 
   2)
     case "$1" in --*)
-      case "$2" in -*) exec rbenv-help alias ;; esac
+      case "$2" in -*)
+        rbenv-help --usage alias >&2;
+        exit 1
+        ;;
+      esac
       exec rbenv-alias "$2" "$1" ;;
     esac
     if [ -e "$1" -a ! -L "$1" ]; then
@@ -139,8 +143,12 @@ case "$#" in
           auto_symlink_point $point
         done
         ;;
+      --help)
+        exec rbenv-help alias
+        ;;
       -*)
-        rbenv-help alias
+        rbenv-help --usage alias >&2
+        exit 1
         ;;
       *)
         if [ -L "$1" ]; then
@@ -163,6 +171,7 @@ case "$#" in
     ;;
 
   *)
-    rbenv-help alias
+    rbenv-help --usage alias >&2
+    exit 1
     ;;
 esac
