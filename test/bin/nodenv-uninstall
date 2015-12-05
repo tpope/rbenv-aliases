@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Summary: Fake uninstall program
+#
+# Usage: nodenv uninstall version
+#
+
+set -e
+[ -n "$NODENV_DEBUG" ] && set -x
+
+# Define `before_uninstall` and `after_uninstall` functions that allow
+# plugin hooks to register a string of code for execution before or
+# after the installation process.
+declare -a after_hooks
+
+after_uninstall() {
+  local hook="$1"
+  after_hooks["${#after_hooks[@]}"]="$hook"
+}
+
+if [ -n "$UNINSTALL_HOOK" ]; then
+  echo Sourcing "$UNINSTALL_HOOK"
+  source "$UNINSTALL_HOOK"
+fi
+
+case "$1" in
+*[0-9].*)
+  VERSION_NAME=${1:?}
+  rm -rf "$NODENV_ROOT/versions/$1"
+  echo "Uninstalled fake version $1"
+
+  echo Executing after_uninstall hooks.
+  for hook in "${after_hooks[@]}"; do eval "$hook"; done
+
+  ;;
+*)
+  echo 'Usage: nodenv-uninstall version'
+  ;;
+esac

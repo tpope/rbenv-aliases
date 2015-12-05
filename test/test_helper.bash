@@ -11,6 +11,7 @@ if [ "$RBENV_ROOT" != "${RBENV_TEST_DIR}/root" ]; then
   local parent
 
   export INSTALL_HOOK="${BATS_TEST_DIRNAME}/../etc/rbenv.d/install/autoalias.bash"
+  export UNINSTALL_HOOK="${BATS_TEST_DIRNAME}/../etc/rbenv.d/uninstall/autoalias.bash"
 
   PATH=/usr/bin:/bin:/usr/sbin:/sbin
   PATH="${RBENV_TEST_DIR}/bin:$PATH"

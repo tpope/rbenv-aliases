@@ -4,8 +4,6 @@
 #
 # Usage: rbenv install version
 #
-# Shows PATH and any variables that start with GEM, RAILS, RBENV or RUBY
-#
 
 set -e
 [ -n "$RBENV_DEBUG" ] && set -x
@@ -22,27 +20,27 @@ after_install() {
 
 if [ -n "$INSTALL_HOOK" ]
 then
-        echo Sourcing "$INSTALL_HOOK"
-        source "$INSTALL_HOOK"
+  echo Sourcing "$INSTALL_HOOK"
+  source "$INSTALL_HOOK"
 fi
 
 STATUS=0
 
 case "$1" in
 [0-9].*)
-        VERSION_NAME=$1
-        d="$RBENV_ROOT/versions/$1"
-        mkdir -p "$d"
-        echo $1 > "$d/RELEASE.txt"
-        echo "Installed fake version $1"
-        echo "into $d directory"
+  VERSION_NAME=$1
+  d="$RBENV_ROOT/versions/$1"
+  mkdir -p "$d"
+  echo $1 > "$d/RELEASE.txt"
+  echo "Installed fake version $1"
+  echo "into $d directory"
 
-        echo Executing after_install hooks.
-        for hook in "${after_hooks[@]}"; do eval "$hook"; done
+  echo Executing after_install hooks.
+  for hook in "${after_hooks[@]}"; do eval "$hook"; done
 
-        ;;
+  ;;
 *)
-        echo 'Usage: rbenv-install version'
-        ;;
+  echo 'Usage: rbenv-install version'
+  ;;
 esac
 exit $STATUS
