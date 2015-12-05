@@ -80,10 +80,10 @@ point_releases() {
   echo_lines_without_symlinks *.*.*-*|sed -e 's/-.*//'|sort -u
 
   # jruby-1.7.3
-  echo_lines_without_symlinks *-*.*.*|sed -e 's/\.[0-9]\+$//'|sort -u
+  echo_lines_without_symlinks *-*.*.*|sed -e 's/\.[0-9]*$//'|sort -u
 
   # 2.1.4
-  echo_lines_without_symlinks [0-9].[0-9].[0-9]|sed -e 's/\.[0-9]\+$//'|sort -u
+  echo_lines_without_symlinks [0-9].[0-9].[0-9]|sed -e 's/\.[0-9]*$//'|sort -u
 }
 
 # Provide rbenv completions
