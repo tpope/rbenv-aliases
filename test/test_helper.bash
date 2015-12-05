@@ -46,6 +46,14 @@ create_versions() {
   done
 }
 
+# Creates test aliases
+create_alias() {
+  local alias="$1"
+  local version="$2"
+
+  mkdir -p "$RBENV_ROOT/versions"
+  ln -nfs "$RBENV_ROOT/versions/$version" "$RBENV_ROOT/versions/$alias"
+}
 
 # assert_alias_version alias version
 
