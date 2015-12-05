@@ -56,7 +56,12 @@ echo_lines_without_symlinks() {
 
 auto_for_point() {
   local highest="$(echo_lines_without_symlinks $1*|sort -n|tail -1)"
-  echo "$highest"
+  if [ "$highest" != "${highest%-p*}" ]; then
+    local patch="$(echo_lines_without_symlinks $1*|sed -e 's/.*-p//'|sort -n|tail -1)"
+    echo "$1-p$patch"
+  else
+    echo "$highest"
+  fi
 }
 
 auto_symlink_point() {
