@@ -54,9 +54,15 @@ echo_lines_without_symlinks() {
   done
 }
 
+patch_start_point() {
+  case "$1" in
+    *.*.*) echo $((3 + ${#1})) ;; # point_release string length + 1 (0 indexed) + 2 for `-p` separator
+    *.*)   echo $((2 + ${#1})) ;; # point_release string length + 1 (0 indexed) + 1 for `.` separator
+  esac
+}
+
 auto_for_point() {
-  local highest="$(echo_lines_without_symlinks $1*|sort -n|tail -1)"
-  echo "$highest"
+  echo_lines_without_symlinks $1* | sort -n -k 1."$(patch_start_point "$1")" | tail -1
 }
 
 auto_symlink_point() {
@@ -74,10 +80,10 @@ point_releases() {
   echo_lines_without_symlinks *.*.*-*|sed -e 's/-.*//'|sort -u
 
   # jruby-1.7.3
-  echo_lines_without_symlinks *-*.*.*|sed -e 's/\.[0-9]\+$//'|sort -u
+  echo_lines_without_symlinks *-*.*.*|sed -e 's/\.[0-9]*$//'|sort -u
 
   # 2.1.4
-  echo_lines_without_symlinks [0-9].[0-9].[0-9]|sed -e 's/\.[0-9]\+$//'|sort -u
+  echo_lines_without_symlinks [0-9].[0-9].[0-9]|sed -e 's/\.[0-9]*$//'|sort -u
 }
 
 # Provide rbenv completions
@@ -118,7 +124,7 @@ case "$#" in
       fi
     elif [ --auto = "$2" ]; then
       case "$1" in
-        *.*.*)
+        *.*)
           auto_symlink_point "$1"
           ;;
         *)
