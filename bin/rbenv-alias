@@ -55,13 +55,13 @@ echo_lines_without_symlinks() {
 }
 
 auto_for_point() {
-  local highest="$(echo_lines_without_symlinks $1*|sort -n|tail -1)"
-  if [ "$highest" != "${highest%-p*}" ]; then
-    local patch="$(echo_lines_without_symlinks $1*|sed -e 's/.*-p//'|sort -n|tail -1)"
-    echo "$1-p$patch"
-  else
-    echo "$highest"
-  fi
+  case "$1" in
+    # 1.9.3-p123
+    *.*.*) echo_lines_without_symlinks $1* | sort -n -k 1.$((3 + ${#1})) | tail -1 ;;
+
+    # 2.1.4 or jruby-1.7.3
+    *.*)   echo_lines_without_symlinks $1* | sort -n -k 1.$((2 + ${#1})) | tail -1 ;;
+  esac
 }
 
 auto_symlink_point() {
@@ -123,7 +123,7 @@ case "$#" in
       fi
     elif [ --auto = "$2" ]; then
       case "$1" in
-        *.*.*)
+        *.*)
           auto_symlink_point "$1"
           ;;
         *)
