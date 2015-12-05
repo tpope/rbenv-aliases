@@ -37,9 +37,13 @@ load test_helper
 @test "rbenv-alias --auto" {
   create_versions 1.8.7-p371      1.8.7-p99        1.8.7-p100
   create_versions 1.2.3-p99-perf  1.2.3-p234-beta  1.2.3-p1-perf
+  create_versions jruby-1.7.2     jruby-1.7.11
+  create_versions 2.1.5           2.1.40
 
   run rbenv-alias --auto
   assert_success
   assert_alias_version 1.8.7 1.8.7-p371
   assert_alias_version 1.2.3 1.2.3-p234-beta
+  assert_alias_version jruby-1.7 jruby-1.7.11
+  assert_alias_version 2.1 2.1.40
 }
