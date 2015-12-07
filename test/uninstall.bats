@@ -26,3 +26,18 @@ load test_helper
   assert_line '1.9.3 => 1.9.3-p123'
   assert_alias_version 1.9.3 1.9.3-p123
 }
+
+@test "running rbenv-uninstall auto updates the alias to highest remaining version, handling multi-segment patches" {
+  create_versions 1.9.3-p123 1.9.3-p456-perf
+  create_alias 1.9.3 1.9.3-p456-perf
+  create_alias 1.9.3-p456 1.9.3-p456-perf
+
+  run rbenv-uninstall 1.9.3-p456-perf
+
+  assert_success
+  assert_line 'Uninstalled fake version 1.9.3-p456-perf'
+  assert_line_starts_with 'Removing invalid link from 1.9.3 '
+  assert_line_starts_with 'Removing invalid link from 1.9.3-p456'
+  assert_line '1.9.3 => 1.9.3-p123'
+  assert_alias_version 1.9.3 1.9.3-p123
+}
