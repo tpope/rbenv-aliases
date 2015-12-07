@@ -22,5 +22,11 @@ load test_helper
   assert_line 'Installed fake version 1.9.3-p200'
   assert_line '1.9.3 => 1.9.3-p200'
 
+  run rbenv-install 1.9.3-p456-perf
+  assert_success
+  assert_alias_version 1.9.3 1.9.3-p456-perf
+  assert_alias_version 1.9.3-p456 1.9.3-p456-perf
+  assert_line 'Installed fake version 1.9.3-p456-perf'
+  assert_line '1.9.3 => 1.9.3-p456-perf'
+  assert_line '1.9.3-p456 => 1.9.3-p456-perf'
 }
-
