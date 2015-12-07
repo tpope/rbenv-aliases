@@ -47,3 +47,24 @@ load test_helper
   assert_alias_version jruby-1.7 jruby-1.7.11
   assert_alias_version 2.1 2.1.40
 }
+
+@test "rbenv-alias 1.8.7-p371 --auto removes dangling alias" {
+  # alias to non-existant version
+  create_alias 1.8.7 1.8.7-p371
+
+  run rbenv-alias 1.8.7 --auto
+
+  assert_success
+  assert [ ! -L "$RBENV_ROOT/versions/1.8.7" ]
+}
+
+@test "rbenv-alias 1.8.7-p371 --auto redirects alias to highest remaining version" {
+  create_versions 1.8.7-p100
+  # alias to non-existant version
+  create_alias 1.8.7 1.8.7-p371
+
+  run rbenv-alias 1.8.7 --auto
+
+  assert_success
+  assert_alias_version 1.8.7 1.8.7-p100
+}
