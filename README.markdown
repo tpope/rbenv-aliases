@@ -18,9 +18,9 @@ having to reinstall gems every time you install a new patch release, check out
 
 ## Installation
 
-    mkdir -p ~/.rbenv/plugins
+    mkdir -p "$(rbenv root)/plugins"
     git clone git://github.com/tpope/rbenv-aliases.git \
-      ~/.rbenv/plugins/rbenv-aliases
+      "$(rbenv root)/plugins/rbenv-aliases"
     rbenv alias --auto
 
 [rbenv]: https://github.com/sstephenson/rbenv
