@@ -54,15 +54,19 @@ echo_lines_without_symlinks() {
   done
 }
 
-patch_start_point() {
+sort_versions() {
+  local patch_start_point
+
   case "$1" in
-    *.*.*) echo $((3 + ${#1})) ;; # point_release string length + 1 (0 indexed) + 2 for `-p` separator
-    *.*)   echo $((2 + ${#1})) ;; # point_release string length + 1 (0 indexed) + 1 for `.` separator
+    *.*.*) patch_start_point=$((${#1} + 3)) ;; # point_release string length + 1 (0 indexed) + 2 for `-p` separator
+    *.*)   patch_start_point=$((${#1} + 2)) ;; # point_release string length + 1 (0 indexed) + 1 for `.` separator
   esac
+
+  sort -n -k "1.$patch_start_point"
 }
 
 auto_for_point() {
-  echo_lines_without_symlinks $1* | sort -n -k 1."$(patch_start_point "$1")" | tail -1
+  echo_lines_without_symlinks $1* | sort_versions "$1" | tail -1
 }
 
 auto_symlink_point() {
