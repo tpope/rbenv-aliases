@@ -64,13 +64,13 @@ assert_alias_version() {
     echo "Versions:"
     (cd $RBENV_ROOT/versions ; ls -l)
   fi
-  assert_equal "$2" `cat $RBENV_ROOT/versions/$1/RELEASE.txt 2>&1`
+  assert_equal "$2" "$(cat "$RBENV_ROOT/versions/$1/RELEASE.txt" 2>&1)"
 }
 
 assert_alias_missing() {
   if [ -f $RBENV_ROOT/versions/$1/RELEASE.txt ]
   then
-    assert_equal "no-version" `cat $RBENV_ROOT/versions/$1/RELEASE.txt 2>&1`
+    assert_equal "no-version" "$(cat "$RBENV_ROOT/versions/$1/RELEASE.txt" 2>&1)"
   fi
 }
 

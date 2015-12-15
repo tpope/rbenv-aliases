@@ -7,6 +7,9 @@ autoalias() {
       rbenv alias "${VERSION_NAME%-*}" --auto 2>/dev/null || true
       rbenv alias "${VERSION_NAME%%-*}" --auto 2>/dev/null || true
       ;;
+    *.*.*)
+      rbenv alias "${VERSION_NAME%.*}" --auto 2>/dev/null || true
+      ;;
     esac
   fi
 }
